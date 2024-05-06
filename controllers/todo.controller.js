@@ -1,7 +1,6 @@
 const TodoSchema = require("../models/todo.model");
 
 async function getTodoList(req, res) {
-  console.log("first");
   try {
     // TODO: where clause to avoid entries where isDeleted is true
     const list = await TodoSchema.find();
@@ -13,12 +12,16 @@ async function getTodoList(req, res) {
 
 async function createTodo(req, res) {
   try {
-    const { title } = req.body;
+    const { title, description } = req.body;
     if (!title?.trim())
       return res.status(400).send("Please enter title of todo");
 
+    if (!description?.trim())
+      return res.status(400).send("Please enter description of todo");
+
     const todoObj = {
       title,
+      description,
       status: "todo",
       isDeleted: false,
     };

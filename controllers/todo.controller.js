@@ -38,21 +38,24 @@ async function updateStatus(req, res) {
   const statuses = ["todo", "in-progress", "done"];
   try {
     const { todoId } = req.params;
-    const { newStatus } = req.body;
+    console.log(req.body);
+    const { newStatus, description, title } = req.body;
     const todoToUpdate = await TodoSchema.findById(todoId);
 
-    if (!newStatus)
+    if (!newStatus || !description || !title)
       return res.status(400).send("Please enter the status to update");
 
-    if (!statuses.includes(newStatus))
+    if (!newStatus && !statuses.includes(newStatus))
       return res.status(400).send("Invalid status");
 
     if (!todoToUpdate) return res.status(404).send("Todo not found");
 
-    todoToUpdate.status = newStatus;
+    if (newStatus) todoToUpdate.status = newStatus;
+    if (title) todoToUpdate.title = title;
+    if (description) todoToUpdate.description = description;
 
     await todoToUpdate.save();
-    return res.status(200).json({ msg: "Status for todo updated" });
+    return res.status(200).json({ msg: "Todo updated" });
   } catch (error) {
     return res.status(500).send("Internal Server Error");
   }
